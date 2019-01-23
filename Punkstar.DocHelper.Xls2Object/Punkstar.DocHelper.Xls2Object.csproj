@@ -69,7 +69,7 @@
     <Compile Include="EntityRange.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Field.cs" />
-    <Compile Include="LoadSetup.cs" />
+    <Compile Include="ImportSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegexAttribute.cs" />
     <Compile Include="ValidationResult.cs" />

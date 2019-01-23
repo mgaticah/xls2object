@@ -14,7 +14,7 @@ namespace Punkstar.DocHelper.Xls2Object
             Fields = new List<Field>();
         }
         [JsonProperty("SpreadSheetName")]
-        public string SpreadSheetName { get; set; }
+        public string WorksheetName { get; set; }
         [JsonProperty("Name")]
         public string Name { get; set; }
         [JsonProperty("ClassName")]

@@ -5,7 +5,7 @@ namespace Punkstar.DocHelper.Xls2Object
 {
 
     [JsonObject]
-    public class LoadSetup
+    public class ImportSettings
     {
         [JsonProperty("Name")]
         public string Name { get; set; }
