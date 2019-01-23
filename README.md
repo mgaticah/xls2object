@@ -6,4 +6,4 @@ Once i was asked to implement excel file imports to a system. So, firstable, i'v
 The solution i've decide to apply was:
 - Create a json file with the rules to understand and read any excel file
 - In the same json file map the attributes of an object of an unknown and not referenced(by this toolkit) assembly to each excel cell.
-- Use reflection to create an object of this specified class and populate its attributes with the data found in the excel file according to the rules defined in the json file. 
+- Use reflection to create an instance of this class and populate its attributes with data found in the excel file according to the rules defined in the json file. 
