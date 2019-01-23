@@ -14,6 +14,8 @@ namespace Punkstar.DocHelper.Xls2Object
     public class Xls2ObjectHelper
     {
         const int fieldNameRowNumber= 2;
+        private const int maxExcelRowsExpected = 100000;
+        private const string ExcelColumnLookupDefaultText = "Excel column lookup";
         List<EntityRange> EntitiesRanges;
         public ImportSettings setup;
         public Assembly assembly;
@@ -167,7 +169,7 @@ namespace Punkstar.DocHelper.Xls2Object
             }
 
         }
-        public ImportSettings CreateLoadSetupByObject(object instance, int deepLevel, string[] excludedClasses)
+        public ImportSettings CreateImportSettingsByObject(object instance, int deepLevel, string[] excludedClasses)
         {
             var output = new ImportSettings();
             var instanceType = instance.GetType();
@@ -181,6 +183,11 @@ namespace Punkstar.DocHelper.Xls2Object
             mainEntity.Entities.AddRange(dependantEntities);
             output.Entities.Add(mainEntity);
             return output;
+        }
+        public string CreateImportSettingsJsonByClass(object instance, int deepLevel, string[] excludedClasses)
+        {
+            var output = CreateImportSettingsByObject(instance, deepLevel, excludedClasses);
+            return JsonConvert.SerializeObject(output);
         }
         public bool Evaluate(Condition condition, object instance)
         {
@@ -359,6 +366,19 @@ namespace Punkstar.DocHelper.Xls2Object
             }
 
         }
+        public ImportSettings GetImportSettings(Stream JSONFile)
+        {
+            ImportSettings importSettings = null;
+            using (var reader = new StreamReader(JSONFile))
+            {
+                StreamReader readStream = new StreamReader(JSONFile, Encoding.UTF8);
+                string jsonString = "";
+                jsonString = jsonString + readStream.ReadToEnd();
+                jsonString = jsonString.Replace(@"\", " ");
+                importSettings = JsonConvert.DeserializeObject<ImportSettings>(jsonString);
+            }
+            return importSettings;
+        }
         private static object GetListInstance(PropertyInfo instanceProperty)
         {
             var listType = typeof(List<>);
@@ -389,19 +409,6 @@ namespace Punkstar.DocHelper.Xls2Object
             }
 
             return dependantEntities;
-        }
-        public ImportSettings GetSetupFile(Stream JSONFile)
-        {
-            ImportSettings loadSetup = null;
-            using (var reader = new StreamReader(JSONFile))
-            {
-                StreamReader readStream = new StreamReader(JSONFile, Encoding.UTF8);
-                string jsonString = "";
-                jsonString = jsonString + readStream.ReadToEnd();
-                jsonString = jsonString.Replace(@"\", " ");
-                loadSetup = JsonConvert.DeserializeObject<ImportSettings>(jsonString);
-            }
-            return loadSetup;
         }
         private List<EntityRange> GetSubEntitiesRanges(List<Entity> Entities, ExcelPackage XLSFile, List<EntityRange> validatedEntityRanges)
         {
@@ -465,13 +472,9 @@ namespace Punkstar.DocHelper.Xls2Object
         }
         public List<dynamic> GetObjectsFromExcel(string excelBase64String, Stream JSONFile)
         {
-
             var data = Convert.FromBase64String(excelBase64String);
             var stream = new MemoryStream(data);
-
             return GetObjectsFromExcel(stream, JSONFile);
-
-
         }
         public List<dynamic> GetObjectsFromExcel(Stream excelStream, Stream JSONFile)
         {
@@ -481,7 +484,6 @@ namespace Punkstar.DocHelper.Xls2Object
         {
             var list = new List<dynamic>();
             var currentSheet = XLSFile.Workbook.Worksheets;
-
             foreach (var entity in Entities)
             {
                 if (entity.WorksheetName == null && entity.Parent == null)
@@ -493,63 +495,27 @@ namespace Punkstar.DocHelper.Xls2Object
                     continue;
                 }
                 var workSheet = currentSheet.FirstOrDefault(x => x.Name == entity.WorksheetName);
-                var totalSpreadsheetRows = 3;
-                for (var i = 3; i <= 100000; i++)
-                    if (string.IsNullOrEmpty(workSheet.Cells[i, 1].Text))
-                    {
-                        totalSpreadsheetRows = i - 1;
-                        break;
-                    }
-                for (int currentRowNumber = 3; currentRowNumber <= totalSpreadsheetRows; currentRowNumber++)
+                int worksheetRowsNumber = WorksheetRowsNumber(workSheet);
+                for (int currentRowNumber = 3; currentRowNumber <= worksheetRowsNumber; currentRowNumber++)
                 {
                     var range = EntitiesRanges.FirstOrDefault(x => x.Name == entity.Name);
                     if (range == null)
-                        throw new Exception(string.Format("No se ha encontrado un rango para la entidad '{0}' en la hoja '{1}' en la sección '{2}'", entity.ClassName, entity.WorksheetName, entity.Name));
+                        throw new Exception(string.Format("Was not found range for entity '{0}' at worksheet '{1}' at section '{2}'", entity.ClassName, entity.WorksheetName, entity.Name));
                     var type = assembly.GetTypes().FirstOrDefault(x => x.FullName == entity.ClassName);
                     var instance = Activator.CreateInstance(type);
                     PopulateInstance(instance, Entities.FirstOrDefault(x => x.Name == entity.Name), workSheet, range, currentRowNumber);
                     if (Entities.FirstOrDefault(x => x.Name == entity.Name).Entities.Any(x => !string.IsNullOrEmpty(x.WorksheetName)))
-                    {
                         instance = GetObjectsFromExcel(instance, XLSFile, Entities.FirstOrDefault(x => x.Name == entity.Name).Entities.Where(x => !string.IsNullOrEmpty(x.WorksheetName)).ToList(), EntitiesRanges).FirstOrDefault();
-                    }
-                    PropertyInfo[] propsList = parentObject.GetType().GetProperties();
+                    PropertyInfo[] parentPropertiesList = parentObject.GetType().GetProperties();
                     var excelLookupValue = GetCellValue(workSheet, range, entity.ExcelLookUpField, currentRowNumber);
                     var parentType = parentObject.GetType();
                     var parentLookupProperty = parentType.GetProperty(entity.ParentLookUpField);
-                    if (entity.ExcelLookUpField != "" && !entity.ExcelLookUpField.Contains(" Excel column lookup") && string.IsNullOrWhiteSpace(excelLookupValue))
-                        throw new Exception(string.Format("La celda '{0}' no contiene valor o no existe en la hoja {1}", entity.ExcelLookUpField, entity.WorksheetName));
-                    var prop = propsList.FirstOrDefault(x => x.Name.Equals(entity.ParentAttribute));
-                    if (prop == null)
+                    if (entity.ExcelLookUpField != "" && !entity.ExcelLookUpField.Contains(ExcelColumnLookupDefaultText) && string.IsNullOrWhiteSpace(excelLookupValue))
+                        throw new Exception(string.Format("Cell '{0}' has no value or doesnt exist at worksheet {1}", entity.ExcelLookUpField, entity.WorksheetName));
+                    var parentAttributePropertyInfo = parentPropertiesList.FirstOrDefault(x => x.Name.Equals(entity.ParentAttribute));
+                    if (parentAttributePropertyInfo == null)
                         throw new Exception(string.Format("'{0}' is not an attribute of '{1}' class", entity.ParentAttribute, entity.Parent));
-                    if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition().Name.Contains("List"))
-                    {
-                        if (parentLookupProperty != null && parentLookupProperty.Name != "")
-                        {
-                            if (parentObject.GetType().GetProperty(parentLookupProperty.Name).GetValue(parentObject, null) == excelLookupValue)
-                            {
-                                IList reflectedList = (IList)prop.GetValue(parentObject);
-                                reflectedList.Add(instance);
-                                parentObject.GetType().GetProperty(entity.ParentAttribute).SetValue(parentObject, reflectedList);
-                            }
-                        }
-                        else
-                        {
-                            IList reflectedList = (IList)prop.GetValue(parentObject);
-                            reflectedList.Add(instance);
-                            parentObject.GetType().GetProperty(entity.ParentAttribute).SetValue(parentObject, reflectedList);
-                        }
-
-                    }
-                    else if (parentLookupProperty != null && parentLookupProperty.Name != "")
-                    {
-                        if (parentObject.GetType().GetProperty(parentLookupProperty.Name).GetValue(parentObject, null) == excelLookupValue)
-                        {
-                            prop.SetValue(parentObject, instance, null);
-                        }
-                    }
-                    else
-                        prop.SetValue(parentObject, instance, null);
-
+                    SetParentAttribute(parentObject, entity, instance, excelLookupValue, parentLookupProperty, parentAttributePropertyInfo);
                 }
             }
             list.Add(parentObject);
@@ -559,13 +525,9 @@ namespace Punkstar.DocHelper.Xls2Object
         public List<dynamic> GetObjectsFromExcel(ExcelPackage XLSFile, Stream JSONFile)
         {
             var list = new List<dynamic>();
-            setup = GetSetupFile(JSONFile);
-
-            
+            setup = GetImportSettings(JSONFile);
             var entities = new List<Entity>();
-
             entities = setup.Entities;
-           
             EntitiesRanges = GetEntityRanges(entities, XLSFile);
             foreach (var entity in entities)
             {
@@ -574,13 +536,24 @@ namespace Punkstar.DocHelper.Xls2Object
                 if (entity.Entities.Any(x => !string.IsNullOrEmpty(x.WorksheetName)))
                     list.AddRange(GetObjectsFromExcel(parentInstance, XLSFile, entity.Entities.Where(x => !string.IsNullOrEmpty(x.WorksheetName)).ToList(), EntitiesRanges));
             }
-
             return list;
         }
-        public string GetLoadSetupJsonByClass(object instance, int deepLevel, string[] excludedClasses)
+        private void SetParentAttribute(dynamic parentObject, Entity entity, object instance, string excelLookupValue, dynamic parentLookupProperty, PropertyInfo parentAttributePropertyInfo)
         {
-            var output = CreateLoadSetupByObject(instance, deepLevel, excludedClasses);
-            return JsonConvert.SerializeObject(output);
+            if (parentAttributePropertyInfo.PropertyType.IsGenericType && parentAttributePropertyInfo.PropertyType.GetGenericTypeDefinition().Name.Contains("List"))
+            {
+                SetParentListAttribute(parentObject, entity, instance, excelLookupValue, parentLookupProperty, parentAttributePropertyInfo);
+
+            }
+            else if (parentLookupProperty != null && parentLookupProperty.Name != "")
+            {
+                if (parentObject.GetType().GetProperty(parentLookupProperty.Name).GetValue(parentObject, null) == excelLookupValue)
+                {
+                    parentAttributePropertyInfo.SetValue(parentObject, instance, null);
+                }
+            }
+            else
+                parentAttributePropertyInfo.SetValue(parentObject, instance, null);
         }
         public void LoadAssembly(Stream inputStream)
         {
@@ -605,13 +578,13 @@ namespace Punkstar.DocHelper.Xls2Object
         }
         public object PopulateAttribute(object instance, ExcelWorksheet workSheet, EntityRange range, Field field, int row)
         {
-            var prop = instance.GetType().GetProperties().FirstOrDefault(x => x.Name.Equals(field.Attribute));
-            if (prop == null)
+            var attributePropertyInfo = instance.GetType().GetProperties().FirstOrDefault(x => x.Name.Equals(field.Attribute));
+            if (attributePropertyInfo == null)
                 throw new Exception(string.Format("El atributo {0} no encontrado en la clase {1}. Verifique el assembly", field.Attribute, instance.GetType()));
-            if (null != prop && prop.CanWrite)
+            if (null != attributePropertyInfo && attributePropertyInfo.CanWrite)
             {
                 var value = GetCellValue(workSheet, range, field, row);
-                AssignValue(instance, prop, field, range, value, row);
+                AssignValue(instance, attributePropertyInfo, field, range, value, row);
                 ValidateField(instance, field, value, row);
             }
             return instance;
@@ -641,10 +614,10 @@ namespace Punkstar.DocHelper.Xls2Object
                             var conditionalType = assembly.GetTypes().FirstOrDefault(x => x.FullName == _Entity.ClassName);
                             var conditionalInstance = Activator.CreateInstance(conditionalType);
                             var childInstance = PopulateInstance(conditionalInstance, _Entity, workSheet, conditionalRange, row);
-                            var prop = instance.GetType().GetProperty(_ConditionalEntity.Attribute, BindingFlags.Public | BindingFlags.Instance);
-                            if (prop == null)
-                                throw new Exception(string.Format("El atributo {0} no encontrado en la clase {1}. Verifique el assembly", _ConditionalEntity.Attribute, conditionalInstance.GetType()));
-                            prop.SetValue(instance, childInstance, null);
+                            var attributePropertyInfo = instance.GetType().GetProperty(_ConditionalEntity.Attribute, BindingFlags.Public | BindingFlags.Instance);
+                            if (attributePropertyInfo == null)
+                                throw new Exception(string.Format("Attribute '{0}' not found in class: '{1}'. Verify Assembly", _ConditionalEntity.Attribute, conditionalInstance.GetType()));
+                            attributePropertyInfo.SetValue(instance, childInstance, null);
                         }
                 }
             ValidateEntity(entity, instance, row);
@@ -757,16 +730,34 @@ namespace Punkstar.DocHelper.Xls2Object
             package.SaveAs(new FileInfo(newExcelFilePath));
             package.Dispose();
         }
+        private static void SetParentListAttribute(dynamic parentObject, Entity entity, object instance, string excelLookupValue, dynamic parentLookupProperty, PropertyInfo parentAttributePropertyInfo)
+        {
+            if (parentLookupProperty != null && parentLookupProperty.Name != "")
+            {
+                if (parentObject.GetType().GetProperty(parentLookupProperty.Name).GetValue(parentObject, null) == excelLookupValue)
+                {
+                    IList reflectedList = (IList)parentAttributePropertyInfo.GetValue(parentObject);
+                    reflectedList.Add(instance);
+                    parentObject.GetType().GetProperty(entity.ParentAttribute).SetValue(parentObject, reflectedList);
+                }
+            }
+            else
+            {
+                IList reflectedList = (IList)parentAttributePropertyInfo.GetValue(parentObject);
+                reflectedList.Add(instance);
+                parentObject.GetType().GetProperty(entity.ParentAttribute).SetValue(parentObject, reflectedList);
+            }
+        }
         public void ValidateEntity(Entity entity, object instance, int row)
         {
             if (!string.IsNullOrEmpty(entity.ValidationType))
             {
                 MethodInfo method = instance.GetType().GetMethod(entity.ValidationType);
                 if (method == null)
-                    throw new Exception(string.Format("Método de validación {0} no encontrado en la clase {1}. Verifique el assembly", entity.ValidationType, entity.ClassName));
+                    throw new Exception(string.Format("Validation method '{0}' not found in class:'{1}'. Verify assembly", entity.ValidationType, entity.ClassName));
                 object result = method.Invoke(instance, null);
                 if (!((bool)result))
-                    throw new Exception(string.Format("ERROR El registro en la fila {0} no cumple con la validación{1}", row, entity.ValidationType));
+                    throw new Exception(string.Format("ERROR Row '{0}' doesnt satisfy validation rule '{1}'", row, entity.ValidationType));
             }
         }
         public void ValidateField(object instance, Field field, string value, int row)
@@ -775,10 +766,10 @@ namespace Punkstar.DocHelper.Xls2Object
             {
                 MethodInfo method = instance.GetType().GetMethod(field.ValidationType);
                 if (method == null)
-                    throw new Exception(string.Format("Método de validación {0} no encontrado en la clase {1}. Verifique el assembly", field.ValidationType, instance.GetType()));
+                    throw new Exception(string.Format("Validation method '{0}' was not found in class '{1}'. Verify assembly", field.ValidationType, instance.GetType()));
                 object result = method.Invoke(instance, null);
                 if (!((bool)result))
-                    throw new Exception(string.Format("ERROR El campo {0} con el valor '{1}' no cumple con la validación '{4}.{3}()' en la fila {2}", field.Name, value, row, field.ValidationType, instance.GetType()));
+                    throw new Exception(string.Format("ERROR Attribute '{0}' = '{1}' doesnt satisfy validation rule '{4}.{3}()'. ROW: {2}", field.Name, value, row, field.ValidationType, instance.GetType()));
             }
 
         }
@@ -788,7 +779,7 @@ namespace Punkstar.DocHelper.Xls2Object
             if (loadSetup == null)
             {
                 result.Status = false;
-                result.Messages.Add("configuración de carga no definida");
+                result.Messages.Add("Import settings undefined");
                 return result;
             }
             if (loadSetup.Regexs != null)
@@ -801,7 +792,7 @@ namespace Punkstar.DocHelper.Xls2Object
                     if (regex != null && !string.IsNullOrEmpty(regex.Expression) && (Regex.Match(value, regex.Expression).Value == "" || string.IsNullOrEmpty(value)))
                     {
                         result.Status = false;
-                        result.Messages.Add(string.Format("'{0}'='{1}' no cumple con la expresión regular:'{2}'", field.Name, value, regex.Expression));
+                        result.Messages.Add(string.Format("'{0}'='{1}' Doesnt satisfy REGEX:'{2}'", field.Name, value, regex.Expression));
                     }
                 }
             }
@@ -814,18 +805,30 @@ namespace Punkstar.DocHelper.Xls2Object
                 if (fieldType == null)
                 {
                     result.Status = false;
-                    result.Messages.Add(string.Format("{0} No encontrado en la entidad {1}", field.Name, objectInstance.GetType().FullName));
+                    result.Messages.Add(string.Format("Attribute '{0}' not found in entity: '{1}'", field.Name, objectInstance.GetType().FullName));
                     return result;
                 }
                 var value = fieldType.GetValue(objectInstance).ToString();
                 if (string.IsNullOrEmpty(value))
                 {
                     result.Status = false;
-                    result.Messages.Add(string.Format("{0} Es obligatorio", field.Name));
+                    result.Messages.Add(string.Format("'{0}' Is mandatory", field.Name));
                     return result;
                 }
             }
             return result;
+        }
+        private static int WorksheetRowsNumber(ExcelWorksheet workSheet)
+        {
+            var worksheetRowsNumber = 3;
+            for (var rowNumber = 3; rowNumber <= maxExcelRowsExpected; rowNumber++)
+                if (string.IsNullOrEmpty(workSheet.Cells[rowNumber, 1].Text))
+                {
+                    worksheetRowsNumber = rowNumber - 1;
+                    break;
+                }
+
+            return worksheetRowsNumber;
         }
     }
 }
