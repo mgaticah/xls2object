@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Punkstar.DocHelper.Xls2Object.TestProject</RootNamespace>
     <AssemblyName>Punkstar.DocHelper.Xls2Object.TestProject</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
@@ -20,6 +20,7 @@
     <TestProjectType>UnitTest</TestProjectType>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,11 +50,27 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="SetupTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ImportSettingsFiles\BlankMainEntityJsonSettingsSample.json" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AssemblySample\Punkstar.DocHelper.Xls2Object.SampleTestAssembly.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Punkstar.DocHelper.Xls2Object.SampleTestAssembly\Punkstar.DocHelper.Xls2Object.SampleTestAssembly.csproj">
+      <Project>{d39f3a16-bcec-48bb-bb3d-3cd54e8270cf}</Project>
+      <Name>Punkstar.DocHelper.Xls2Object.SampleTestAssembly</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Punkstar.DocHelper.Xls2Object\Punkstar.DocHelper.Xls2Object.csproj">
+      <Project>{8e0520a8-b264-4f0e-988d-bd1a1a900e8b}</Project>
+      <Name>Punkstar.DocHelper.Xls2Object</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
