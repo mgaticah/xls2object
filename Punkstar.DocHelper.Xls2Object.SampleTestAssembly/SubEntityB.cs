@@ -8,7 +8,7 @@ namespace Punkstar.DocHelper.Xls2Object.SampleTestAssembly
 {
     public class SubEntityB
     {
-        int SubEntityBIdSample { get; set; }
-        string SubEntityBStringPropertySample { get; set; }
+        public int SubEntityBIdSample { get; set; }
+        public string SubEntityBStringPropertySample { get; set; }
     }
 }

@@ -232,14 +232,15 @@ namespace Punkstar.DocHelper.Xls2Object
                 if (!instanceProperty.CanWrite || !instanceProperty.GetSetMethod(true).IsPublic)
                     continue;
                 var excluded = false;
-                foreach (var excludedClass in excludedClasses)
-                {
-                    if (instanceProperty.PropertyType.FullName.Contains(excludedClass))
+                if(excludedClasses!=null)
+                    foreach (var excludedClass in excludedClasses)
                     {
-                        excluded = true;
-                        break;
+                        if (instanceProperty.PropertyType.FullName.Contains(excludedClass))
+                        {
+                            excluded = true;
+                            break;
+                        }
                     }
-                }
                 if (excluded) continue;
                 string propertyTypeName = instanceProperty.PropertyType.Name.ToLower();
                 if (propertyTypeName.Contains("nullable"))
@@ -322,14 +323,15 @@ namespace Punkstar.DocHelper.Xls2Object
                         if (setMethod != null)
                         {
                             var excluded = false;
-                            foreach (var excludedClass in excludedClasses)
-                            {
-                                if (property.PropertyType.FullName.Contains(excludedClass))
+                            if(excludedClasses!=null)
+                                foreach (var excludedClass in excludedClasses)
                                 {
-                                    excluded = true;
-                                    break;
+                                    if (property.PropertyType.FullName.Contains(excludedClass))
+                                    {
+                                        excluded = true;
+                                        break;
+                                    }
                                 }
-                            }
                             if (excluded) continue;
 
                             var field = new Field();

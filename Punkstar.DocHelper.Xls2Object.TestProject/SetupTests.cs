@@ -11,9 +11,8 @@ namespace Punkstar.DocHelper.Xls2Object.TestProject
         [TestMethod]
         public void ValidateBlankMainEntitySettingsCreation()
         {
-            var instance = new object();
+            var instance = new MainEntity();
             var helper = new Xls2ObjectHelper();
-            instance= helper.PopulateObjectWithRandomData(instance);
             string blankMainEntityImportSettings = helper.CreateImportSettingsJsonByClass(instance, 2, null);
             var appDir = AppDomain.CurrentDomain.BaseDirectory;
             var blankMainEntityImportSettingsFileContent = File.ReadAllText(Path.Combine(appDir,"ImportSettingsFiles", "BlankMainEntityJsonSettingsSample.json"));

@@ -10,7 +10,14 @@ namespace Punkstar.DocHelper.Xls2Object.SampleTestAssembly
     {
         public int SubEntityAId { get; set; }
         public SubEntityB SubEntityBSample { get; set; }
+        public List<SubEntityB> ListOfSubEntityBSample { get; set; }
         public string SubEntityAStringSample { get; set; }
         public List<int> ListOfIntegersSample { get; set; }
+        public SubEntityA()
+        {
+            ListOfIntegersSample = new List<int>();
+            ListOfSubEntityBSample = new List<SubEntityB>() ;
+        }
+        
     }
 }

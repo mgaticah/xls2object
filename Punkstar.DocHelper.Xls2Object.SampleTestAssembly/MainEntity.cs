@@ -8,9 +8,13 @@ namespace Punkstar.DocHelper.Xls2Object.SampleTestAssembly
 {
     public class MainEntity
     {
-        int MainEntityId { get; set; }
-        string StringFieldSample { get; set; }
-        DateTime DateTimeFieldSample { get; set; }
-        SubEntityA SubEntityASample { get; set; }
+        public int MainEntityId { get; set; }
+        public string StringFieldSample { get; set; }
+        public DateTime DateTimeFieldSample { get; set; }
+        public SubEntityA SubEntityASample { get; set; }
+        public MainEntity()
+        {
+            SubEntityASample = new SubEntityA();
+        }
     }
 }
