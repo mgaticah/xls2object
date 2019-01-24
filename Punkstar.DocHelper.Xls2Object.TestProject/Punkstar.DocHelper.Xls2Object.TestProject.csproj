@@ -54,8 +54,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ImportSettingsFiles\BlankMainEntityJsonSettingsSample.json" />
-    <None Include="ImportSettingsFiles\BlankMainEntityJsonSettingsSample-Beautified.json" />
+    <None Include="ImportSettingsFiles\BlankMainEntityJsonSettingsSample.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="ImportSettingsFiles\BlankMainEntityJsonSettingsSample-Beautified.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
