@@ -1,178 +1,206 @@
 {
-  "Name": "MainEntity",
-  "Entities": [
-    {
-      "ValidationType": null,
-      "IsList": false,
-      "WorksheetName": null,
-      "Name": "MainEntity",
-      "ClassName": "Punkstar.DocHelper.Xls2Object.SampleTestAssembly.MainEntity",
-      "Parent": null,
-      "ExcelLookUpField": null,
-      "ParentLookUpField": null,
-      "ParentAttribute": null,
-      "Fields": [
-        {
-          "Name": "Excel column name",
-          "Mandatory": "false",
-          "ValidationType": "",
-          "Attribute": "MainEntityId",
-          "FieldType": "Int32"
-        },
-        {
-          "Name": "Excel column name",
-          "Mandatory": "false",
-          "ValidationType": "",
-          "Attribute": "StringFieldSample",
-          "FieldType": "String"
-        },
-        {
-          "Name": "Excel column name",
-          "Mandatory": "false",
-          "ValidationType": "",
-          "Attribute": "DateTimeFieldSample",
-          "FieldType": "DateTime"
-        }
-      ],
-      "ConditionalFields": [
-
-      ],
-      "ConditionalEntities": [
-
-      ],
-      "Entities": [
-        {
-          "ValidationType": null,
-          "IsList": false,
-          "WorksheetName": null,
-          "Name": "SubEntityASample",
-          "ClassName": "Punkstar.DocHelper.Xls2Object.SampleTestAssembly.SubEntityA",
-          "Parent": "Punkstar.DocHelper.Xls2Object.SampleTestAssembly.MainEntity",
-          "ExcelLookUpField": "'SubEntityASample' Excel column lookup ",
-          "ParentLookUpField": "field in parent to look up for",
-          "ParentAttribute": "SubEntityASample",
-          "Fields": [
+   "Name":"MainEntity",
+   "Entities":[
+      {
+         "ValidationType":null,
+         "IsList":false,
+         "WorksheetName":null,
+         "Name":"MainEntity",
+         "ClassName":"Punkstar.DocHelper.Xls2Object.SampleTestAssembly.MainEntity",
+         "Parent":null,
+         "ExcelLookUpField":null,
+         "ParentLookUpField":null,
+         "ParentAttribute":null,
+         "Fields":[
             {
-              "Name": "Excel column name",
-              "Mandatory": "false",
-              "ValidationType": "",
-              "Attribute": "SubEntityAId",
-              "FieldType": "Int32"
+               "Name":"Excel column name",
+               "Mandatory":"false",
+               "ValidationType":"",
+               "Attribute":"MainEntityId",
+               "FieldType":"Int32"
             },
             {
-              "Name": "Excel column name",
-              "Mandatory": "false",
-              "ValidationType": "",
-              "Attribute": "SubEntityAStringSample",
-              "FieldType": "String"
+               "Name":"Excel column name",
+               "Mandatory":"false",
+               "ValidationType":"",
+               "Attribute":"StringFieldSample",
+               "FieldType":"String"
+            },
+            {
+               "Name":"Excel column name",
+               "Mandatory":"false",
+               "ValidationType":"",
+               "Attribute":"DateTimeFieldSample",
+               "FieldType":"DateTime"
+            },
+            {
+               "Name":"Excel column name",
+               "Mandatory":"false",
+               "ValidationType":"",
+               "Attribute":"SubEntityASample",
+               "FieldType":null
             }
-          ],
-          "ConditionalFields": [
+         ],
+         "ConditionalFields":[
 
-          ],
-          "ConditionalEntities": [
+         ],
+         "ConditionalEntities":[
 
-          ],
-          "Entities": [
+         ],
+         "Entities":[
             {
-              "ValidationType": null,
-              "IsList": false,
-              "WorksheetName": null,
-              "Name": "SubEntityBSample",
-              "ClassName": "Punkstar.DocHelper.Xls2Object.SampleTestAssembly.SubEntityB",
-              "Parent": "SubEntityASample",
-              "ExcelLookUpField": "'SubEntityBSample' Excel column lookup ",
-              "ParentLookUpField": "field in parent to look up for",
-              "ParentAttribute": "SubEntityBSample",
-              "Fields": [
+               "ValidationType":null,
+               "IsList":false,
+               "WorksheetName":null,
+               "Name":"SubEntityASample",
+               "ClassName":"Punkstar.DocHelper.Xls2Object.SampleTestAssembly.SubEntityA",
+               "Parent":"Punkstar.DocHelper.Xls2Object.SampleTestAssembly.MainEntity",
+               "ExcelLookUpField":"'SubEntityASample' Excel column lookup ",
+               "ParentLookUpField":"field in parent to look up for",
+               "ParentAttribute":"SubEntityASample",
+               "Fields":[
+                  {
+                     "Name":"Excel column name",
+                     "Mandatory":"false",
+                     "ValidationType":"",
+                     "Attribute":"SubEntityAId",
+                     "FieldType":"Int32"
+                  },
+                  {
+                     "Name":"Excel column name",
+                     "Mandatory":"false",
+                     "ValidationType":"",
+                     "Attribute":"SubEntityBSample",
+                     "FieldType":null
+                  },
+                  {
+                     "Name":"Excel column name",
+                     "Mandatory":"false",
+                     "ValidationType":"",
+                     "Attribute":"ListOfSubEntityBSample",
+                     "FieldType":null
+                  },
+                  {
+                     "Name":"Excel column name",
+                     "Mandatory":"false",
+                     "ValidationType":"",
+                     "Attribute":"SubEntityAStringSample",
+                     "FieldType":"String"
+                  },
+                  {
+                     "Name":"Excel column name",
+                     "Mandatory":"false",
+                     "ValidationType":"",
+                     "Attribute":"ListOfIntegersSample",
+                     "FieldType":null
+                  }
+               ],
+               "ConditionalFields":[
+
+               ],
+               "ConditionalEntities":[
+
+               ],
+               "Entities":[
+                  {
+                     "ValidationType":null,
+                     "IsList":false,
+                     "WorksheetName":null,
+                     "Name":"SubEntityBSample",
+                     "ClassName":"Punkstar.DocHelper.Xls2Object.SampleTestAssembly.SubEntityB",
+                     "Parent":"SubEntityASample",
+                     "ExcelLookUpField":"'SubEntityBSample' Excel column lookup ",
+                     "ParentLookUpField":"field in parent to look up for",
+                     "ParentAttribute":"SubEntityBSample",
+                     "Fields":[
+                        {
+                           "Name":"Excel column name",
+                           "Mandatory":"false",
+                           "ValidationType":"",
+                           "Attribute":"SubEntityBIdSample",
+                           "FieldType":"Int32"
+                        },
+                        {
+                           "Name":"Excel column name",
+                           "Mandatory":"false",
+                           "ValidationType":"",
+                           "Attribute":"SubEntityBStringPropertySample",
+                           "FieldType":"String"
+                        }
+                     ],
+                     "ConditionalFields":[
+
+                     ],
+                     "ConditionalEntities":[
+
+                     ],
+                     "Entities":[
+
+                     ]
+                  },
                 {
-                  "Name": "Excel column name",
-                  "Mandatory": "false",
-                  "ValidationType": "",
-                  "Attribute": "SubEntityBIdSample",
-                  "FieldType": "Int32"
+                  "ValidationType": null,
+                  "IsList": true,
+                  "WorksheetName": null,
+                  "Name": "ListOfSubEntityBSample",
+                  "ClassName": "Punkstar.DocHelper.Xls2Object.SampleTestAssembly.SubEntityB",
+                  "Parent": "SubEntityASample",
+                  "ExcelLookUpField": "'ListOfSubEntityBSample' Excel column lookup ",
+                  "ParentLookUpField": "field in parent to look up for",
+                  "ParentAttribute": "ListOfSubEntityBSample",
+                  "Fields": [
+                    {
+                      "Name": "Excel column name",
+                      "Mandatory": "false",
+                      "ValidationType": "",
+                      "Attribute": "SubEntityBIdSample",
+                      "FieldType": "Int32"
+                    },
+                    {
+                      "Name": "Excel column name",
+                      "Mandatory": "false",
+                      "ValidationType": "",
+                      "Attribute": "SubEntityBStringPropertySample",
+                      "FieldType": "String"
+                    }
+                  ],
+                  "ConditionalFields": [
+
+                  ],
+                  "ConditionalEntities": [
+
+                  ],
+                  "Entities": [
+
+                  ]
                 },
-                {
-                  "Name": "Excel column name",
-                  "Mandatory": "false",
-                  "ValidationType": "",
-                  "Attribute": "SubEntityBStringPropertySample",
-                  "FieldType": "String"
-                }
-              ],
-              "ConditionalFields": [
+                  {
+                     "ValidationType":null,
+                     "IsList":true,
+                     "WorksheetName":null,
+                     "Name":"ListOfIntegersSample",
+                     "ClassName":"System.Int32",
+                     "Parent":"SubEntityASample",
+                     "ExcelLookUpField":"'ListOfIntegersSample' Excel column lookup ",
+                     "ParentLookUpField":"field in parent to look up for",
+                     "ParentAttribute":"ListOfIntegersSample",
+                     "Fields":[
 
-              ],
-              "ConditionalEntities": [
+                     ],
+                     "ConditionalFields":[
 
-              ],
-              "Entities": [
+                     ],
+                     "ConditionalEntities":[
 
-              ]
-            },
-            {
-              "ValidationType": null,
-              "IsList": true,
-              "WorksheetName": null,
-              "Name": "ListOfSubEntityBSample",
-              "ClassName": "Punkstar.DocHelper.Xls2Object.SampleTestAssembly.SubEntityB",
-              "Parent": "SubEntityASample",
-              "ExcelLookUpField": "'ListOfSubEntityBSample' Excel column lookup ",
-              "ParentLookUpField": "field in parent to look up for",
-              "ParentAttribute": "ListOfSubEntityBSample",
-              "Fields": [
-                {
-                  "Name": "Excel column name",
-                  "Mandatory": "false",
-                  "ValidationType": "",
-                  "Attribute": "SubEntityBIdSample",
-                  "FieldType": "Int32"
-                },
-                {
-                  "Name": "Excel column name",
-                  "Mandatory": "false",
-                  "ValidationType": "",
-                  "Attribute": "SubEntityBStringPropertySample",
-                  "FieldType": "String"
-                }
-              ],
-              "ConditionalFields": [
+                     ],
+                     "Entities":[
 
-              ],
-              "ConditionalEntities": [
-
-              ],
-              "Entities": [
-
-              ]
-            },
-            {
-              "ValidationType": null,
-              "IsList": true,
-              "WorksheetName": null,
-              "Name": "ListOfIntegersSample",
-              "ClassName": "System.Int32",
-              "Parent": "SubEntityASample",
-              "ExcelLookUpField": "'ListOfIntegersSample' Excel column lookup ",
-              "ParentLookUpField": "field in parent to look up for",
-              "ParentAttribute": "ListOfIntegersSample",
-              "Fields": [
-
-              ],
-              "ConditionalFields": [
-
-              ],
-              "ConditionalEntities": [
-
-              ],
-              "Entities": [
-
-              ]
+                     ]
+                  }
+               ]
             }
-          ]
-        }
-      ]
-    }
-  ],
-  "Regexs": null
+         ]
+      }
+   ],
+   "Regexs":null
 }

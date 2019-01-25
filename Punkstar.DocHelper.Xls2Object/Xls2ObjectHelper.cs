@@ -19,6 +19,256 @@ namespace Punkstar.DocHelper.Xls2Object
         private List<EntityRange> EntitiesRanges;
         public ImportSettings setup;
         public Assembly assembly;
+        public void AssignStringValue(StringField field, object instance, PropertyInfo prop,  EntityRange range, string value, int row)
+        {
+            if (field.Mandatory == "true" && string.IsNullOrEmpty(value))
+            {
+                throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna '{0}' con el valor para el atributo '{1}' (tipo: {3}) es obligatorio", field.Name, field.Attribute, row, field.FieldType, range.Name));
+            }
+
+            if (string.IsNullOrEmpty(value))
+            {
+                prop.SetValue(instance, "", null);
+                return;
+            }
+
+            if (setup.Regexs != null)
+            {
+                var regex = setup.Regexs.FirstOrDefault(x => x.Attribute == field.Attribute && x.ClassName == range.ClassName) != null ? setup.Regexs.FirstOrDefault(x => x.Attribute == field.Attribute && x.ClassName == range.ClassName).Expression : "";
+                if (regex != null && !string.IsNullOrEmpty(regex) && (Regex.Match(value, regex).Value == "" || string.IsNullOrEmpty(value)))
+                {
+                    throw new Exception(string.Format("ERROR(Linea {2}) Entidad '{5}': Columna '{0}' con el valor para el atributo '{1}' (tipo: '{3}') no cumple con la expresión regular '{4}'", field.Name, field.Attribute, row, field.FieldType, regex, range.Name));
+                }
+            }
+            prop.SetValue(instance, value, null);
+        }
+        public void AssignIntValue(IntField field, object instance, PropertyInfo prop,  EntityRange range, string value, int row) {
+            if (field.Mandatory == "true" && string.IsNullOrEmpty(value))
+            {
+                throw new Exception(string.Format("ERROR(Linea {2}) Entidad '{4}': Columna '{0}' con el valor para el atributo '{1}' (tipo: '{3}') es obligatorio", field.Name, field.Attribute, row, field.FieldType, range.Name));
+            }
+
+            if (string.IsNullOrEmpty(value))
+            {
+                try
+                {
+                    prop.SetValue(instance, null, null);
+                }
+                catch (Exception)
+                {
+                    prop.SetValue(instance, 0, null);
+                }
+                return;
+            }
+            int n;
+            bool isNumeric = int.TryParse(value, out n);
+            if (!isNumeric)
+            {
+                throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} no cumple con el tipo {3}", field.Name, field.Attribute, row, field.FieldType.ToUpper(), range.Name));
+            }
+
+            prop.SetValue(instance, n, null);
+        }
+        public void AssignInt32Value(Int32Field field, object instance, PropertyInfo prop,  EntityRange range, string value, int row) {
+            if (field.Mandatory == "true" && string.IsNullOrEmpty(value))
+            {
+                throw new Exception(string.Format("ERROR(Linea {2}) Entidad '{4}': Columna '{0}' con el valor para el atributo '{1}' (tipo: '{3}') es obligatorio", field.Name, field.Attribute, row, field.FieldType, range.Name));
+            }
+
+            if (string.IsNullOrEmpty(value))
+            {
+                try
+                {
+                    prop.SetValue(instance, null, null);
+                }
+                catch (Exception)
+                {
+                    prop.SetValue(instance, 0, null);
+                }
+                return;
+            }
+            int n;
+            bool isNumeric = int.TryParse(value, out n);
+            if (!isNumeric)
+            {
+                throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} no cumple con el tipo {3}", field.Name, field.Attribute, row, field.FieldType.ToUpper(), range.Name));
+            }
+
+            prop.SetValue(instance, n, null);
+        }
+        public void AssignInt64Value(Int64Field field, object instance, PropertyInfo prop,  EntityRange range, string value, int row) {
+            if (field.Mandatory == "true" && string.IsNullOrEmpty(value))
+            {
+                throw new Exception(string.Format("ERROR(Linea {2}) Entidad '{4}': Columna '{0}' con el valor para el atributo '{1}' (tipo: '{3}') es obligatorio", field.Name, field.Attribute, row, field.FieldType, range.Name));
+            }
+
+            if (string.IsNullOrEmpty(value))
+            {
+                try
+                {
+                    prop.SetValue(instance, null, null);
+                }
+                catch (Exception)
+                {
+                    prop.SetValue(instance, 0, null);
+                }
+                return;
+            }
+            int n;
+            bool isNumeric = int.TryParse(value, out n);
+            if (!isNumeric)
+            {
+                throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} no cumple con el tipo {3}", field.Name, field.Attribute, row, field.FieldType.ToUpper(), range.Name));
+            }
+
+            prop.SetValue(instance, n, null);
+        }
+        public void AssignDateTimeValue(DateTimeField field, object instance, PropertyInfo prop, EntityRange range, string value, int row) {
+            if (field.Mandatory == "true" && string.IsNullOrEmpty(value))
+            {
+                throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} (tipo: {3}) es obligatorio", field.Name, field.Attribute, row, field.FieldType, range.Name));
+            }
+
+            if (string.IsNullOrEmpty(value))
+            {
+                prop.SetValue(instance, new DateTime(), null);
+                return;
+            }
+
+            DateTime date;
+            if (!DateTime.TryParse(value, out date))
+            {
+                throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} no cumple con el tipo {3}", field.Name, field.Attribute, row, field.FieldType.ToUpper(), range.Name));
+            }
+
+            prop.SetValue(instance, date, null);
+        }
+        public void AssignBoolValue(BoolField field, object instance, PropertyInfo prop,  EntityRange range, string value, int row) {
+            if (field.Mandatory == "true" && string.IsNullOrEmpty(value))
+            {
+                throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} (tipo: {3}) es obligatorio", field.Name, field.Attribute, row, field.FieldType, range.Name));
+            }
+
+            if (string.IsNullOrEmpty(value))
+            {
+                prop.SetValue(instance, false, null);
+                return;
+            }
+            bool varBool;
+            if (!bool.TryParse(value, out varBool))
+            {
+                throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} no cumple con el tipo {3}", field.Name, field.Attribute, row, field.FieldType.ToUpper(), range.Name));
+            }
+
+            prop.SetValue(instance, varBool, null);
+        }
+        public void AssignBooleanValue(BooleanField field, object instance, PropertyInfo prop,  EntityRange range, string value, int row) {
+            if (field.Mandatory == "true" && string.IsNullOrEmpty(value))
+            {
+                throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} (tipo: {3}) es obligatorio", field.Name, field.Attribute, row, field.FieldType, range.Name));
+            }
+
+            if (string.IsNullOrEmpty(value))
+            {
+                prop.SetValue(instance, false, null);
+                return;
+            }
+            bool varBool;
+            if (!bool.TryParse(value, out varBool))
+            {
+                throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} no cumple con el tipo {3}", field.Name, field.Attribute, row, field.FieldType.ToUpper(), range.Name));
+            }
+
+            prop.SetValue(instance, varBool, null);
+        }
+        public void AssignGuidValue(GuidField field, object instance, PropertyInfo prop,  EntityRange range, string value, int row) {
+            if (field.Mandatory == "true" && string.IsNullOrEmpty(value))
+            {
+                throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} (tipo: {3}) es obligatorio", field.Name, field.Attribute, row, field.FieldType, range.Name));
+            }
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return;
+            }
+
+            Guid varGuid;
+            if (!Guid.TryParse(value, out varGuid))
+            {
+                throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} no cumple con el tipo {3}", field.Name, field.Attribute, row, field.FieldType.ToUpper(), range.Name));
+            }
+
+            prop.SetValue(instance, varGuid, null);
+        }
+        public void AssignAnotherKindOfValue(GuidField field, object instance, PropertyInfo prop, EntityRange range, string value, int row)
+        {
+            if (field.Mandatory == "true" && string.IsNullOrEmpty(value))
+            {
+                throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} (tipo: {3}) es obligatorio", field.Name, field.Attribute, row, field.FieldType, range.Name));
+            }
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return;
+            }
+
+            var childType = assembly.GetTypes().FirstOrDefault(x => x.Name == field.FieldType);
+            var childInstance = Activator.CreateInstance(childType);
+            var parseDirecto = true;
+            if (childType.IsEnum)
+            {
+                try
+                {
+                    childInstance = Enum.Parse(childType, value);
+                    prop.SetValue(instance, childInstance, null);
+                }
+                catch (Exception)
+                {
+                    parseDirecto = false;
+                }
+                if (!parseDirecto)
+                {
+                    try
+                    {
+                        var encontrado = false;
+                        foreach (var declaredField in ((TypeInfo)childType).DeclaredFields)
+                        {
+                            foreach (var customAttribute in declaredField.CustomAttributes)
+                            {
+                                if (customAttribute.ConstructorArguments != null && customAttribute.ConstructorArguments.Count > 0)
+                                {
+                                    if (customAttribute.ConstructorArguments.Any(x => x.Value.ToString().ToLower() == value.ToLower()))
+                                    {
+                                        childInstance = Enum.Parse(childType, declaredField.Name);
+                                        prop.SetValue(instance, childInstance, null);
+                                        encontrado = true;
+                                        break;
+                                    }
+                                }
+
+                                if (encontrado)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(string.Format("No ha sido posible interretar el valor '{0}' en el enumerador '{1}.Error:{2}'", value, field.FieldType, ex.Message));
+                    }
+                }
+            }
+            else if (childType.IsClass)
+            {
+                var childInstanceProp = instance.GetType().GetProperties().FirstOrDefault(x => x.GetType() == childType);
+                if (childInstanceProp != null)
+                {
+                    childInstanceProp.SetValue(childInstance, value, null);
+                    prop.SetValue(instance, childInstance, null);
+                }
+            }
+        }
         public void AssignValue(object instance, PropertyInfo prop, Field field, EntityRange range, string value, int row)
         {
             try
@@ -26,194 +276,38 @@ namespace Punkstar.DocHelper.Xls2Object
                 switch (field.FieldType.ToLower())
                 {
                     case "string":
-                        if (field.Mandatory == "true" && string.IsNullOrEmpty(value))
-                        {
-                            throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna '{0}' con el valor para el atributo '{1}' (tipo: {3}) es obligatorio", field.Name, field.Attribute, row, field.FieldType, range.Name));
-                        }
-
-                        if (string.IsNullOrEmpty(value))
-                        {
-                            prop.SetValue(instance, "", null);
-                            return;
-                        }
-
-                        if (setup.Regexs != null)
-                        {
-                            var regex = setup.Regexs.FirstOrDefault(x => x.Attribute == field.Attribute && x.ClassName == range.ClassName) != null ? setup.Regexs.FirstOrDefault(x => x.Attribute == field.Attribute && x.ClassName == range.ClassName).Expression : "";
-                            if (regex != null && !string.IsNullOrEmpty(regex) && (Regex.Match(value, regex).Value == "" || string.IsNullOrEmpty(value)))
-                            {
-                                throw new Exception(string.Format("ERROR(Linea {2}) Entidad '{5}': Columna '{0}' con el valor para el atributo '{1}' (tipo: '{3}') no cumple con la expresión regular '{4}'", field.Name, field.Attribute, row, field.FieldType, regex, range.Name));
-                            }
-                        }
-                        prop.SetValue(instance, value, null);
+                        AssignStringValue(field.GetStringField(), instance, prop, range, value, row);
                         break;
                     case "int":
+                        AssignIntValue(field.GetIntField(), instance, prop, range, value, row);
+                        break;
                     case "int32":
+                        AssignInt32Value(field.GetInt32Field(), instance, prop, range, value, row);
+                        break;
                     case "int64":
-                        if (field.Mandatory == "true" && string.IsNullOrEmpty(value))
-                        {
-                            throw new Exception(string.Format("ERROR(Linea {2}) Entidad '{4}': Columna '{0}' con el valor para el atributo '{1}' (tipo: '{3}') es obligatorio", field.Name, field.Attribute, row, field.FieldType, range.Name));
-                        }
-
-                        if (string.IsNullOrEmpty(value))
-                        {
-                            try
-                            {
-                                prop.SetValue(instance, null, null);
-                            }
-                            catch (Exception)
-                            {
-                                prop.SetValue(instance, 0, null);
-                            }
-                            return;
-                        }
-                        int n;
-                        bool isNumeric = int.TryParse(value, out n);
-                        if (!isNumeric)
-                        {
-                            throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} no cumple con el tipo {3}", field.Name, field.Attribute, row, field.FieldType.ToUpper(), range.Name));
-                        }
-
-                        prop.SetValue(instance, n, null);
+                        AssignInt64Value(field.GetInt64Field(), instance, prop, range, value, row);
                         break;
                     case "datetime":
-                        if (field.Mandatory == "true" && string.IsNullOrEmpty(value))
-                        {
-                            throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} (tipo: {3}) es obligatorio", field.Name, field.Attribute, row, field.FieldType, range.Name));
-                        }
-
-                        if (string.IsNullOrEmpty(value))
-                        {
-                            prop.SetValue(instance, new DateTime(), null);
-                            return;
-                        }
-
-                        DateTime date;
-                        if (!DateTime.TryParse(value, out date))
-                        {
-                            throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} no cumple con el tipo {3}", field.Name, field.Attribute, row, field.FieldType.ToUpper(), range.Name));
-                        }
-
-                        prop.SetValue(instance, date, null);
+                        AssignDateTimeValue(field.GetDateTimeField(), instance, prop, range, value, row);
                         break;
                     case "bool":
+                        AssignBoolValue(field.GetBoolField(), instance, prop, range, value, row);
+                        break;
                     case "boolean":
-                        if (field.Mandatory == "true" && string.IsNullOrEmpty(value))
-                        {
-                            throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} (tipo: {3}) es obligatorio", field.Name, field.Attribute, row, field.FieldType, range.Name));
-                        }
-
-                        if (string.IsNullOrEmpty(value))
-                        {
-                            prop.SetValue(instance, false, null);
-                            return;
-                        }
-                        bool varBool;
-                        if (!bool.TryParse(value, out varBool))
-                        {
-                            throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} no cumple con el tipo {3}", field.Name, field.Attribute, row, field.FieldType.ToUpper(), range.Name));
-                        }
-
-                        prop.SetValue(instance, varBool, null);
+                        AssignBooleanValue(field.GetBooleanField(), instance, prop, range, value, row);
                         break;
                     case "guid":
-                        if (field.Mandatory == "true" && string.IsNullOrEmpty(value))
-                        {
-                            throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} (tipo: {3}) es obligatorio", field.Name, field.Attribute, row, field.FieldType, range.Name));
-                        }
-
-                        if (string.IsNullOrEmpty(value))
-                        {
-                            return;
-                        }
-
-                        Guid varGuid;
-                        if (!Guid.TryParse(value, out varGuid))
-                        {
-                            throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} no cumple con el tipo {3}", field.Name, field.Attribute, row, field.FieldType.ToUpper(), range.Name));
-                        }
-
-                        prop.SetValue(instance, varGuid, null);
+                        AssignGuidValue(field.GetGuidField(),instance, prop,  range, value, row);
                         break;
                     default:
-                        if (field.Mandatory == "true" && string.IsNullOrEmpty(value))
-                        {
-                            throw new Exception(string.Format("ERROR(Linea {2}) Entidad {4}: Columna {0} con el valor para el atributo {1} (tipo: {3}) es obligatorio", field.Name, field.Attribute, row, field.FieldType, range.Name));
-                        }
-
-                        if (string.IsNullOrEmpty(value))
-                        {
-                            return;
-                        }
-
-                        var childType = assembly.GetTypes().FirstOrDefault(x => x.Name == field.FieldType);
-                        var childInstance = Activator.CreateInstance(childType);
-                        var parseDirecto = true;
-                        if (childType.IsEnum)
-                        {
-                            try
-                            {
-                                childInstance = Enum.Parse(childType, value);
-                                prop.SetValue(instance, childInstance, null);
-                            }
-                            catch (Exception)
-                            {
-                                parseDirecto = false;
-                            }
-                            if (!parseDirecto)
-                            {
-                                try
-                                {
-                                    var encontrado = false;
-                                    foreach (var declaredField in ((TypeInfo)childType).DeclaredFields)
-                                    {
-                                        foreach (var customAttribute in declaredField.CustomAttributes)
-                                        {
-                                            if (customAttribute.ConstructorArguments != null && customAttribute.ConstructorArguments.Count > 0)
-                                            {
-                                                if (customAttribute.ConstructorArguments.Any(x => x.Value.ToString().ToLower() == value.ToLower()))
-                                                {
-                                                    childInstance = Enum.Parse(childType, declaredField.Name);
-                                                    prop.SetValue(instance, childInstance, null);
-                                                    encontrado = true;
-                                                    break;
-                                                }
-                                            }
-
-                                            if (encontrado)
-                                            {
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    throw new Exception(string.Format("No ha sido posible interretar el valor '{0}' en el enumerador '{1}.Error:{2}'", value, field.FieldType, ex.Message));
-                                }
-                            }
-                        }
-                        else if (childType.IsClass)
-                        {
-                            var childInstanceProp = instance.GetType().GetProperties().FirstOrDefault(x => x.GetType() == childType);
-                            if (childInstanceProp != null)
-                            {
-                                childInstanceProp.SetValue(childInstance, value, null);
-                                prop.SetValue(instance, childInstance, null);
-                            }
-                        }
+                        AssignAnotherKindOfValue(field.GetGuidField(), instance, prop, range, value, row);
                         break;
                 }
-
-
-
-
             }
             catch (Exception ex)
             {
                 throw ex;
             }
-
         }
         public ImportSettings CreateImportSettingsByObject(object instance, int deepLevel, string[] excludedClasses)
         {
@@ -387,46 +481,62 @@ namespace Punkstar.DocHelper.Xls2Object
             var fields = new List<Field>();
             foreach (var property in instanceType.GetProperties())
             {
+                Field field = null;
                 switch (property.PropertyType.Name.ToLower())
                 {
                     case "string":
-                    case "int":
-                    case "int32":
-                    case "int64":
-                    case "datetime":
-                    case "bool":
-                    case "boolean":
-                    case "guid":
-                        MethodInfo setMethod = property.GetSetMethod();
-                        if (setMethod != null)
-                        {
-                            var excluded = false;
-                            if (excludedClasses != null)
-                            {
-                                foreach (var excludedClass in excludedClasses)
-                                {
-                                    if (property.PropertyType.FullName.Contains(excludedClass))
-                                    {
-                                        excluded = true;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (excluded)
-                            {
-                                continue;
-                            }
-
-                            var field = new Field();
-                            field.Attribute = property.Name;
-                            field.FieldType = property.PropertyType.Name;
-                            field.Mandatory = "false";
-                            field.Name = "Excel column name";
-                            field.ValidationType = "";
-                            fields.Add(field);
-                        }
+                        field = new StringField();
                         break;
+                    case "int":
+                        field = new IntField();
+                        break;
+                    case "int32":
+                        field = new Int32Field();
+                        break;
+                    case "int64":
+                        field = new Int64Field();
+                        break;
+                    case "datetime":
+                        field = new DateTimeField();
+                        break;
+                    case "bool":
+                        field = new BoolField();
+                        break;
+                    case "boolean":
+                        field = new BooleanField();
+                        break;
+                    case "guid":
+                        field = new GuidField();
+                        break;
+                    default:
+                        field = new Field();
+                        break;
+                }
+                MethodInfo setMethod = property.GetSetMethod();
+                if (setMethod != null)
+                {
+                    var excluded = false;
+                    if (excludedClasses != null)
+                    {
+                        foreach (var excludedClass in excludedClasses)
+                        {
+                            if (property.PropertyType.FullName.Contains(excludedClass))
+                            {
+                                excluded = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (excluded)
+                    {
+                        continue;
+                    }
+                    field.Attribute = property.Name;
+                    field.Mandatory = "false";
+                    field.Name = "Excel column name";
+                    field.ValidationType = "";
+                    fields.Add(field);
                 }
             }
             return fields;
