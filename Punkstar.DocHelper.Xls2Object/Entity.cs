@@ -13,7 +13,7 @@ namespace Punkstar.DocHelper.Xls2Object
             ConditionalFields = new List<ConditionalFields>();
             Fields = new List<Field>();
         }
-        [JsonProperty("SpreadSheetName")]
+        [JsonProperty("WorksheetName")]
         public string WorksheetName { get; set; }
         [JsonProperty("Name")]
         public string Name { get; set; }
